@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>旺店通旗舰版物流资费表生成工具</title>
+    <title>物流资费表格生成工具</title>
 </head>
 <style type="text/css" media="screen">
     *{
@@ -135,7 +135,6 @@
             
         </tbody>
     </table>
-    <span>@soukosara</span>
 </body>
 <script type="text/javascript" charset="utf-8" async defer>
     var sst = [];
@@ -202,7 +201,6 @@
                 var tabit = 0;
                 for(var i=0;i<ssq.length;i++){
                     for(var m = 0;m<ssq[i].length;m++){
-                        console.log("数量" + msg["num"][i])
                         for(var j=tabit;j<(tabit+msg["num"][i]);j++){
                                 var tr = document.createElement("tr");
                                 tr.innerHTML = "<td>" + cq +"</td>" + "<td>" + ssq[i][m] +"</td>" + "<td>" + wlarr[w] +"</td>" + "<td>" + mny[j][0] +"</td>" + "<td>" + mny[j][1] +"</td>" + "<td>" + mny[j][2] +"</td>" + "<td>" + mny[j][3] +"</td>" + "<td>" + mny[j][4] +"</td>";
@@ -229,7 +227,7 @@
         var msgA = [];
         msgA.push(msg);
         console.log(JSON.stringify(msgA));
-        copyToClip(JSON.stringify(msgA))；
+        copyToClip(JSON.stringify(msgA));
         setTable();
     }
     function Inwindow(){
