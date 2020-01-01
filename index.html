@@ -44,9 +44,6 @@
         display: inline;
         width: 100px;
     }
-    #ct{
-        width: 100px;
-    }
     #outwindow{
         width: 100px;
     }
@@ -59,12 +56,21 @@
     #cq{
         width:100px;
     }
+    #nbbg{
+        width:100px;
+    }
     #wl{
         width:100px;
     }
     #main .linp{
         width: 300px;
         height: 80px;
+    }
+    input[type="button"]{
+        background-color: #ddd;
+    }
+    input[type="text"]{
+        background-color: #fff;
     }
     input, button {
             border: none;
@@ -95,8 +101,8 @@
         <input type="text" name="" value="" placeholder="仓库或店铺" id="cq">
         <input type="text" name="" value="" placeholder="物流公司" id="wl">
         <input type="button" name="" value="添加地区" id="bigsexadd" onclick="addbigsex(this)">
-        <input type="button" name="" value="生成表格" id="ct" onclick="ct();">
-        <input type="button" name="" value="导出" id="outwindow" onclick="Outwindow()">
+        <input type="button" name="" value="导出表格" id="nbbg" onclick="tableToExcel('tble')">
+        <input type="button" name="" value="复制到剪贴板" id="outwindow" onclick="Outwindow()">
         <input type="button" name="" value="导入" id="inwindow" onclick="Inwindow();">
         <div class="bigsex">
             <div class="LD">
@@ -112,7 +118,7 @@
             </div>
         </div>
     </div>
-    <table>
+    <table id="tble">
         <thead>
             <tr>
                 <th>仓库或店铺</th>
@@ -137,8 +143,9 @@
     var cq = "";
     var wl = "";
     var minsg = [];
-    var Btihuan = ["河北","山西","辽宁","吉林","黑龙江","江苏","浙江","安徽","福建","江西","山东","河南","湖北","湖南","四川","贵州","云南","陕西","甘肃","青海","内蒙古","广西","西藏","宁夏","新疆","香港","澳门"];
-    var tihuan = ["河北省","山西省","辽宁省","吉林省","黑龙江省","江苏省","浙江省","安徽省","福建省","江西省","山东省","河南省","湖北省","湖南省","四川省","贵州省","云南省","陕西省","甘肃省","青海省","内蒙古自治区","广西壮族自治区","西藏自治区","宁夏回族自治区","新疆维吾尔自治区","香港特别行政区","澳门特别行政区"];
+    var msg = {};
+    var Btihuan = ["河北","山西","辽宁","吉林","黑龙江","江苏","浙江","安徽","福建","江西","山东","河南","湖北","湖南","四川","贵州","云南","陕西","甘肃","青海","内蒙古","广西","西藏","宁夏","新疆","香港","澳门","广东"];
+    var tihuan = ["河北省","山西省","辽宁省","吉林省","黑龙江省","江苏省","浙江省","安徽省","福建省","江西省","山东省","河南省","湖北省","湖南省","四川省","贵州省","云南省","陕西省","甘肃省","青海省","内蒙古自治区","广西壮族自治区","西藏自治区","宁夏回族自治区","新疆维吾尔自治区","香港特别行政区","澳门特别行政区","广东省"];
     var Tb = {};
     for(var i = 0;i<Btihuan.length;i++){
         Tb[Btihuan[i]]=tihuan[i];
@@ -158,7 +165,7 @@
         var fath = document.getElementById('main');
         var div = document.createElement("div");
         div.setAttribute("class","bigsex");
-        div.innerHTML ="<div class='LD'><input type='text' class='linp linp1'></div><div class='RD'><div class='addqu'><input type='button' name='' value='添加区间' class='qujianadd' onclick='addsex(this)'></div><div class='sex'><input type='button' name='' value='删除区间' class='delsex' onclick='deletesex(this)'><input type='text' name='qj' value='' placeholder=''><input type='text' name='sz' value='' placeholder=''><input type='text' name='sf' value='' placeholder=''><input type='text' name='xz' value='' placeholder=''><input type='text' name='xf' value='' placeholder=''></div></div>";
+        div.innerHTML ="<div class='LD'><input type='text' class='linp linp1'></div><div class='RD'><div class='addqu'><input type='button' name='' value='添加区间' class='qujianadd' onclick='addsex(this)'></div><div class='sex'><input type='button' name='' value='删除区间' class='delsex' onclick='deletesex(this)'><input type='text' name='qj' value='' placeholder='区间'><input type='text' name='sz' value='' placeholder='首重'><input type='text' name='sf' value='' placeholder='首费'><input type='text' name='xz' value='' placeholder='续重'><input type='text' name='xf' value='' placeholder='续费'></div></div>";
         fath.appendChild(div);
     }
     function getData(){
@@ -167,7 +174,7 @@
         var domsex = document.getElementsByClassName("bigsex");
         for(var i = 0;i<domsex.length;i++){
             sst[i]=domsex[i].getElementsByClassName("linp")[0].value;
-            ssq[i]=sst[i].split("，");
+            ssq[i]=sst[i].split(/，|,/);
         }
         for(var i=0;i<ssq.length;i++){
             for(var j=0;j<ssq[i].length;j++){
@@ -187,26 +194,28 @@
     }
     function setTable(){
         var maind = document.getElementById("main");
-        maind.style.visibility="hidden";
         var tbody = document.getElementById("tablecenter");
-        for(var i=0;i<ssq.length;i++){
-            for(var m = 0;m<ssq[i].length;m++){
-                for(var j=0;j<mny.length;j++){
-                        var tr = document.createElement("tr");
-                        tr.innerHTML = "<td>" + cq +"</td>" + "<td>" + ssq[i][m] +"</td>" + "<td>" + wl +"</td>" + "<td>" + mny[j][0] +"</td>" + "<td>" + mny[j][1] +"</td>" + "<td>" + mny[j][2] +"</td>" + "<td>" + mny[j][3] +"</td>" + "<td>" + mny[j][4] +"</td>";
-                        tbody.appendChild(tr);
+        var wlarr = [];
+        wlarr = wl.split(/,|，/);
+        for(var w = 0;w<wlarr.length;w++){
+                var tabit = 0;
+                for(var i=0;i<ssq.length;i++){
+                    for(var m = 0;m<ssq[i].length;m++){
+                        console.log("数量" + msg["num"][i])
+                        for(var j=tabit;j<(tabit+msg["num"][i]);j++){
+                                var tr = document.createElement("tr");
+                                tr.innerHTML = "<td>" + cq +"</td>" + "<td>" + ssq[i][m] +"</td>" + "<td>" + wlarr[w] +"</td>" + "<td>" + mny[j][0] +"</td>" + "<td>" + mny[j][1] +"</td>" + "<td>" + mny[j][2] +"</td>" + "<td>" + mny[j][3] +"</td>" + "<td>" + mny[j][4] +"</td>";
+                                tbody.appendChild(tr);
+                        }
+                    }
+                    tabit += msg["num"][i];
+                    console.log("借位符"+tabit)
                 }
-            }
         }
     }
-    function ct(){
-        getData();
-        setTable();
-    }
     function Outwindow(){
+        
         getData();
-        setTable();
-        var msg = {};
         msg["s"]=ssq;
         msg["c"]=cq;
         msg["w"]=wl;
@@ -219,7 +228,8 @@
         var msgA = [];
         msgA.push(msg);
         console.log(JSON.stringify(msgA));
-        alert(JSON.stringify(msgA));
+        copyToClip(JSON.stringify(msgA))
+        setTable();
     }
     function Inwindow(){
         var catchs = prompt();
@@ -254,6 +264,41 @@
             for(var j = 0;j<sinput.length-1;j++){
                 sinput[j+1].value = mny[i][j];
             }
+        }
+    }
+
+function base64(content) {
+        return window.btoa(unescape(encodeURIComponent(content)));
+    }
+    function tableToExcel(tableID) {
+        getData();
+        setTable();
+        var fileName = prompt("请输入文件名");
+        var excelContent = document.getElementById(tableID).innerHTML;
+        //      alert(excelContent);
+        var excelFile = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:x='urn:schemas-microsoft-com:office:excel' xmlns='http://www.w3.org/TR/REC-html40'>";
+        excelFile += "<head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head>";
+        excelFile += "<body><table width='10%'  border='1'>";
+        excelFile += excelContent;
+        excelFile += "</table></body>";
+        excelFile += "</html>";
+        var link = "data:application/vnd.ms-excel;base64," + base64(excelFile);
+        var a = document.createElement("a");
+        a.download = fileName + ".xlsx";
+        a.href = link;
+        a.click();
+    }
+    function copyToClip(content, message) {
+        var aux = document.createElement("input"); 
+        aux.setAttribute("value", content); 
+        document.body.appendChild(aux); 
+        aux.select();
+        document.execCommand("copy"); 
+        document.body.removeChild(aux);
+        if (message == null) {
+            alert("复制成功");
+        } else{
+            alert(message);
         }
     }
 </script>
