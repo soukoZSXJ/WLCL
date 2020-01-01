@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>物流资费表格生成工具</title>
+    <title>Document</title>
 </head>
 <style type="text/css" media="screen">
     *{
@@ -102,7 +102,7 @@
         <input type="text" name="" value="" placeholder="物流公司" id="wl">
         <input type="button" name="" value="添加地区" id="bigsexadd" onclick="addbigsex(this)">
         <input type="button" name="" value="导出表格" id="nbbg" onclick="tableToExcel('tble')">
-        <input type="button" name="" value="复制到剪贴板" id="outwindow" onclick="Outwindow()">
+        <input type="button" name="" value="确认" id="outwindow" onclick="Outwindow()">
         <input type="button" name="" value="导入" id="inwindow" onclick="Inwindow();">
         <div class="bigsex">
             <div class="LD">
@@ -200,6 +200,7 @@
         for(var w = 0;w<wlarr.length;w++){
                 var tabit = 0;
                 for(var i=0;i<ssq.length;i++){
+                    console.log(i)
                     for(var m = 0;m<ssq[i].length;m++){
                         for(var j=tabit;j<(tabit+msg["num"][i]);j++){
                                 var tr = document.createElement("tr");
@@ -208,7 +209,6 @@
                         }
                     }
                     tabit += msg["num"][i];
-                    console.log("借位符"+tabit)
                 }
         }
     }
@@ -228,7 +228,6 @@
         msgA.push(msg);
         console.log(JSON.stringify(msgA));
         copyToClip(JSON.stringify(msgA));
-        setTable();
     }
     function Inwindow(){
         var catchs = prompt();
@@ -270,6 +269,10 @@ function base64(content) {
         return window.btoa(unescape(encodeURIComponent(content)));
     }
     function tableToExcel(tableID) {
+        if(mny["num"]==undefined){
+            alert("请先点击确认");
+            return 0;
+        }
         getData();
         setTable();
         var fileName = prompt("请输入文件名");
