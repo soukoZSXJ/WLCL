@@ -270,10 +270,7 @@ function base64(content) {
         return window.btoa(unescape(encodeURIComponent(content)));
     }
     function tableToExcel(tableID) {
-        if(mny["num"]==undefined){
-            alert("请先点击确认");
-            return 0;
-        }
+
         getData();
         setTable();
         var fileName = prompt("请输入文件名");
