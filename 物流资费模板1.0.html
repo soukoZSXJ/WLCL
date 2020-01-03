@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>旺店通旗舰版物流资费表格快速生成工具</title>
+</head>
+<style type="text/css" media="screen">
+    *{
+        margin:0;
+        padding:0;
+    }
+    body{
+        background-color:#eee;
+    }
+    #main{
+        overflow: hidden;
+    }
+    .LD{
+        float:left;
+        width: 49%;
+    }
+    .LD input{
+        width:100px;
+    }
+    .RD{
+        float:right;
+        width: 49%;
+    }
+    .RD .qujianadd{
+        float:left;
+        width:100px;
+    }
+    .RD .delsex{
+        width:100px;
+    }
+    .RD input{
+        width:50px;
+        overflow:hidden;
+    }
+    .addqu{
+        overflow:hidden;
+    }
+    #bigsexadd{
+        display: inline;
+        width: 100px;
+    }
+    #outwindow{
+        width: 100px;
+    }
+    #inwindow{
+        width: 100px;
+    }
+    .bigsex{
+        overflow:hidden;
+    }
+    #cq{
+        width:100px;
+    }
+    #nbbg{
+        width:100px;
+    }
+    #wl{
+        width:100px;
+    }
+    #main .linp{
+        width: 300px;
+        height: 80px;
+    }
+    input[type="button"]{
+        background-color: #ddd;
+    }
+    input[type="text"]{
+        background-color: #fff;
+    }
+    input, button {
+            border: none;
+            outline: none;
+    }
+    input{
+        width: 100%;
+        border: 1px solid #ccc;
+        padding: 7px 0;
+        background: #F4F4F7;
+        border-radius: 3px;
+        padding-left:5px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+        box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+        -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+        -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+        transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s
+    }
+    input:focus{
+        border-color: #66afe9;
+        outline: 0;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
+        box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6)
+    }
+</style>
+<body>
+    <div id="main">
+        <input type="text" name="" value="" placeholder="仓库或店铺" id="cq">
+        <input type="text" name="" value="" placeholder="物流公司" id="wl">
+        <input type="button" name="" value="添加地区" id="bigsexadd" onclick="addbigsex(this)">
+        <input type="button" name="" value="导出表格" id="nbbg" onclick="tableToExcel('tble')">
+        <input type="button" name="" value="确认" id="outwindow" onclick="Outwindow()">
+        <input type="button" name="" value="导入" id="inwindow" onclick="Inwindow();">
+        <div class="bigsex">
+            <div class="LD">
+                <input type="text" class="linp linp1" placeholder="省份">
+            </div>
+            <div class="RD">
+                <div class="addqu">
+                    <input type="button" name="" value="添加区间" class="qujianadd" onclick="addsex(this)">
+                </div>
+                <div class="sex">
+                    <input type="button" name="" value="删除区间" class="delsex" onclick="deletesex(this)"><input type="text" name="qj" value="" placeholder="区间"><input type="text" name="sz" value="" placeholder="首重"><input type="text" name="sf" value="" placeholder="首费"><input type="text" name="xz" value="" placeholder="续重"><input type="text" name="xf" value="" placeholder="续费">
+                </div>
+            </div>
+        </div>
+    </div>
+    <table id="tble">
+        <thead>
+            <tr>
+                <th>仓库或店铺</th>
+                <th>省份</th>
+                <th>市</th>
+                <th>区</th>
+                <th>物流公司</th>
+                <th>重量区间-结束</th>
+                <th>首重</th>
+                <th>首费</th>
+                <th>续重</th>
+                <th>续费</th>
+            </tr>
+        </thead>
+        <tbody id="tablecenter">
+            
+        </tbody>
+    </table>
+    <span>@soukosara</span>
+</body>
+<script type="text/javascript" charset="utf-8" async defer>
+    var sst = [];
+    var ssq = [];
+    var mny = [];
+    var cq = "";
+    var wl = "";
+    var minsg = [];
+    var msg = {};
+    var Btihuan = ["河北","山西","辽宁","吉林","黑龙江","江苏","浙江","安徽","福建","江西","山东","河南","湖北","湖南","四川","贵州","云南","陕西","甘肃","青海","内蒙古","广西","西藏","宁夏","新疆","香港","澳门","广东","海南"];
+    var tihuan = ["河北省","山西省","辽宁省","吉林省","黑龙江省","江苏省","浙江省","安徽省","福建省","江西省","山东省","河南省","湖北省","湖南省","四川省","贵州省","云南省","陕西省","甘肃省","青海省","内蒙古自治区","广西壮族自治区","西藏自治区","宁夏回族自治区","新疆维吾尔自治区","香港特别行政区","澳门特别行政区","广东省","海南省"];
+    var shenghui = [["+黑龙江省","黑龙江省-哈尔滨市"],["+吉林省","吉林省-长春市"],["+辽宁省","辽宁省-沈阳市"],["+内蒙古自治区","内蒙古自治区-呼和浩特市"],["+河北省","河北省-石家庄市"],["+山东省","山东省-济南市"],["+山西省","山西省-太原市"],["+陕西省","陕西省-西安市"],["+甘肃省","甘肃省-兰州市"],["+新疆维吾尔自治区","新疆维吾尔自治区-乌鲁木齐市"],["+青海省","青海省-西宁市"],["+西藏自治区","西藏自治区-拉萨市"],["+四川省","四川省-成都市"],["+河南省","河南省-郑州市"],["+江苏省","江苏省-南京市"],["+安徽省","安徽省-合肥市"],["+湖北省","湖北省-武汉市"],["+贵州省","贵州省-贵阳市"],["+湖南省","湖南省-长沙市"],["+江西省","江西省-南昌市"],["+浙江省","浙江省-杭州市"],["+福建省","福建省-福州市"],["+云南省","云南省-昆明市"],["+广西壮族自治区","广西壮族自治区-南宁市"],["+广东省","广东省-广州市"],["+海南省","海南省-海口市"],["+黑龙江","黑龙江-哈尔滨市"],["+吉林","吉林-长春市"],["+辽宁","辽宁-沈阳市"],["+内蒙古","内蒙古自治区-呼和浩特市"],["+河北","河北-石家庄市"],["+山东","山东-济南市"],["+山西","山西-太原市"],["+陕西","陕西-西安市"],["+甘肃","甘肃-兰州市"],["+新疆","新疆维吾尔自治区-乌鲁木齐市"],["+青海","青海-西宁市"],["+西藏","西藏自治区-拉萨市"],["+四川","四川-成都市"],["+河南","河南-郑州市"],["+江苏","江苏-南京市"],["+安徽","安徽-合肥市"],["+湖北","湖北-武汉市"],["+贵州","贵州-贵阳市"],["+湖南","湖南-长沙市"],["+江西","江西-南昌市"],["+浙江","浙江-杭州市"],["+福建","福建-福州市"],["+云南","云南-昆明市"],["+广西","广西壮族自治区-南宁市"],["+广东","广东-广州市"],["+海南","海南-海口市"]];
+    var Tb = {};
+    var ShengHuiObj = {};
+    for(var i = 0;i<Btihuan.length;i++){
+        Tb[Btihuan[i]]=tihuan[i];
+    }
+    for(var i = 0;i<shenghui.length;i++){
+        ShengHuiObj[shenghui[i][0]]=shenghui[i][1];
+    }
+    function addsex(obj){
+        var fath = obj.parentNode.parentNode;
+        var div = document.createElement("div");
+        div.setAttribute("class","sex");
+        div.innerHTML = "<input type='button' name='' value='删除区间' class='delsex' onclick='deletesex(this)'><input type='text' name='qj' value='' placeholder='区间'><input type='text' name='sz' value='' placeholder='首重'><input type='text' name='sf' value='' placeholder='首费'><input type='text' name='xz' value='' placeholder='续重'><input type='text' name='xf' value='' placeholder='续费'>";
+        fath.appendChild(div);
+    }
+    function deletesex(obj){
+        var fath = obj.parentNode;
+        fath.parentNode.removeChild(fath);
+    }
+    function addbigsex(obj){
+        var fath = document.getElementById('main');
+        var div = document.createElement("div");
+        div.setAttribute("class","bigsex");
+        div.innerHTML ="<div class='LD'><input type='text' class='linp linp1'></div><div class='RD'><div class='addqu'><input type='button' name='' value='添加区间' class='qujianadd' onclick='addsex(this)'></div><div class='sex'><input type='button' name='' value='删除区间' class='delsex' onclick='deletesex(this)'><input type='text' name='qj' value='' placeholder='区间'><input type='text' name='sz' value='' placeholder='首重'><input type='text' name='sf' value='' placeholder='首费'><input type='text' name='xz' value='' placeholder='续重'><input type='text' name='xf' value='' placeholder='续费'></div></div>";
+        fath.appendChild(div);
+    }
+    function getData(){
+        cq = document.getElementById("cq").value;
+        wl = document.getElementById("wl").value;
+        var domsex = document.getElementsByClassName("bigsex");
+        for(var i = 0;i<domsex.length;i++){
+            sst[i]=domsex[i].getElementsByClassName("linp")[0].value;
+            ssq[i]=sst[i].split(/，|,/);
+        }
+        for(var i=0;i<ssq.length;i++){                      //没有省得加上省
+            for(var j=0;j<ssq[i].length;j++){
+                ssq[i][j] = ssq[i][j].split("-");
+                if(ShengHuiObj[ssq[i][j][0]]!=undefined)ssq[i][j][0]=ShengHuiObj[ssq[i][j][0]];
+                if(Tb[ssq[i][j][0]]!=undefined)ssq[i][j][0]=Tb[ssq[i][j][0]];
+            }
+        }
+        var smdomsex = document.getElementsByClassName("sex");
+        for(var i = 0;i<smdomsex.length;i++){
+            var x = smdomsex[i].getElementsByTagName("input");
+            mny[i]=new Array();
+            for(var j=1;j<x.length;j++){
+                x[j].value==""?mny[i][j-1]=0:mny[i][j-1]=x[j].value;
+                
+            }
+        }
+    }
+    function setTable(){
+        var maind = document.getElementById("main");
+        var tbody = document.getElementById("tablecenter");
+        var wlarr = [];
+        wlarr = wl.split(/,|，/);
+        for(var w = 0;w<wlarr.length;w++){
+                var tabit = 0;
+                for(var i=0;i<ssq.length;i++){
+                    console.log(i)
+                    for(var m = 0;m<ssq[i].length;m++){
+                        for(var j=tabit;j<(tabit+msg["num"][i]);j++){
+                                var tr = document.createElement("tr");
+                                if(ssq[i][m][1]==undefined)ssq[i][m][1]="";
+                                if(ssq[i][m][2]==undefined)ssq[i][m][2]="";
+                                tr.innerHTML = "<td>" + cq +"</td>" + "<td>" + ssq[i][m][0] +"</td>" + "<td>" + ssq[i][m][1] +"</td>" + "<td>" + ssq[i][m][2] +"</td>" + "<td>" + wlarr[w] +"</td>" + "<td>" + mny[j][0] +"</td>" + "<td>" + mny[j][1] +"</td>" + "<td>" + mny[j][2] +"</td>" + "<td>" + mny[j][3] +"</td>" + "<td>" + mny[j][4] +"</td>";
+                                tbody.appendChild(tr);
+                        }
+                    }
+                    tabit += msg["num"][i];
+                }
+        }
+    }
+    function Outwindow(){
+        
+        getData();
+        msg["s"]=ssq;
+        msg["c"]=cq;
+        msg["w"]=wl;
+        msg["m"]=mny;
+        msg["num"]=[];
+        var bignum = document.getElementsByClassName("bigsex");
+        for(var i=0;i<bignum.length;i++){
+            msg["num"].push(bignum[i].getElementsByClassName("sex").length);
+        }
+        var msgA = [];
+        msgA.push(msg);
+        console.log(JSON.stringify(msgA));
+        copyToClip(JSON.stringify(msgA));
+    }
+    function Inwindow(){
+        var catchs = prompt();
+        minsg = JSON.parse(catchs);
+        console.log(minsg);
+        var bigsexaddButton = document.getElementById("bigsexadd");
+        //ssq = minsg[0]["s"];
+        for(var i = 0;i<minsg[0]["s"].length;i++){
+            ssq.push([]);
+            for(var j = 0;j<minsg[0]["s"][i].length;j++){
+                if(minsg[0]["s"][i][j].length!=1)ssq[i].push(minsg[0]["s"][i][j].join("-"));
+                else ssq[i].push(minsg[0]["s"][i][j][0]);
+            }
+        }
+        cq = minsg[0]["c"];
+        wl = minsg[0]["w"];
+        mny = minsg[0]["m"];
+        var smsexnum = minsg[0]["num"];
+        document.getElementById("cq").value=cq;
+        document.getElementById("wl").value=wl;
+        for(var i = 1;i<smsexnum.length;i++){
+            addbigsex(bigsexaddButton);
+        }
+        var qjButton = document.getElementsByClassName("qujianadd");
+        for(var i = 0;i<smsexnum.length;i++){
+            for(var j=1;j<smsexnum[i];j++){
+                addsex(qjButton[i]);
+            }
+        }
+        var linps = document.getElementsByClassName("linp");
+        for(var i = 0;i<ssq.length;i++){
+                ssq[i] = ssq[i].join("，");
+                linps[i].value = ssq[i];
+        }
+        var sexs = document.getElementsByClassName("sex");
+        for(var i = 0;i<sexs.length;i++){
+            var sinput = sexs[i].getElementsByTagName("input");
+            for(var j = 0;j<sinput.length-1;j++){
+                sinput[j+1].value = mny[i][j];
+            }
+        }
+    }
+function base64(content) {
+        return window.btoa(unescape(encodeURIComponent(content)));
+    }
+    function tableToExcel(tableID) {
+        getData();
+        setTable();
+        var fileName = prompt("请输入文件名");
+        var excelContent = document.getElementById(tableID).innerHTML;
+        //      alert(excelContent);
+        var excelFile = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:x='urn:schemas-microsoft-com:office:excel' xmlns='http://www.w3.org/TR/REC-html40'>";
+        excelFile += "<head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head>";
+        excelFile += "<body><table width='10%'  border='1'>";
+        excelFile += excelContent;
+        excelFile += "</table></body>";
+        excelFile += "</html>";
+        var link = "data:application/vnd.ms-excel;base64," + base64(excelFile);
+        var a = document.createElement("a");
+        a.download = fileName + ".xlsx";
+        a.href = link;
+        a.click();
+    }
+    function copyToClip(content, message) {
+        var aux = document.createElement("input"); 
+        aux.setAttribute("value", content); 
+        document.body.appendChild(aux); 
+        aux.select();
+        document.execCommand("copy"); 
+        document.body.removeChild(aux);
+        if (message == null) {
+            alert("复制成功");
+        } else{
+            alert(message);
+        }
+    }
+</script>
+</html>
