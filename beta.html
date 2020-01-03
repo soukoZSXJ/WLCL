@@ -140,11 +140,11 @@
     <span>@soukosara</span>
 </body>
 <script type="text/javascript" charset="utf-8" async defer>
-    var sst = [];
-    var ssq = [];
-    var mny = [];
-    var cq = "";
-    var wl = "";
+    var sst = [];   
+    var ssq = [];   //省市区
+    var mny = [];   //物流资费列表
+    var cq = "";    //仓库
+    var wl = "";    //物流公司
     var minsg = [];
     var msg = {};
     var Btihuan = ["河北","山西","辽宁","吉林","黑龙江","江苏","浙江","安徽","福建","江西","山东","河南","湖北","湖南","四川","贵州","云南","陕西","甘肃","青海","内蒙古","广西","西藏","宁夏","新疆","香港","澳门","广东","海南"];
@@ -152,22 +152,22 @@
     var shenghui = [["+黑龙江省","黑龙江省-哈尔滨市"],["+吉林省","吉林省-长春市"],["+辽宁省","辽宁省-沈阳市"],["+内蒙古自治区","内蒙古自治区-呼和浩特市"],["+河北省","河北省-石家庄市"],["+山东省","山东省-济南市"],["+山西省","山西省-太原市"],["+陕西省","陕西省-西安市"],["+甘肃省","甘肃省-兰州市"],["+新疆维吾尔自治区","新疆维吾尔自治区-乌鲁木齐市"],["+青海省","青海省-西宁市"],["+西藏自治区","西藏自治区-拉萨市"],["+四川省","四川省-成都市"],["+河南省","河南省-郑州市"],["+江苏省","江苏省-南京市"],["+安徽省","安徽省-合肥市"],["+湖北省","湖北省-武汉市"],["+贵州省","贵州省-贵阳市"],["+湖南省","湖南省-长沙市"],["+江西省","江西省-南昌市"],["+浙江省","浙江省-杭州市"],["+福建省","福建省-福州市"],["+云南省","云南省-昆明市"],["+广西壮族自治区","广西壮族自治区-南宁市"],["+广东省","广东省-广州市"],["+海南省","海南省-海口市"],["+黑龙江","黑龙江-哈尔滨市"],["+吉林","吉林-长春市"],["+辽宁","辽宁-沈阳市"],["+内蒙古","内蒙古自治区-呼和浩特市"],["+河北","河北-石家庄市"],["+山东","山东-济南市"],["+山西","山西-太原市"],["+陕西","陕西-西安市"],["+甘肃","甘肃-兰州市"],["+新疆","新疆维吾尔自治区-乌鲁木齐市"],["+青海","青海-西宁市"],["+西藏","西藏自治区-拉萨市"],["+四川","四川-成都市"],["+河南","河南-郑州市"],["+江苏","江苏-南京市"],["+安徽","安徽-合肥市"],["+湖北","湖北-武汉市"],["+贵州","贵州-贵阳市"],["+湖南","湖南-长沙市"],["+江西","江西-南昌市"],["+浙江","浙江-杭州市"],["+福建","福建-福州市"],["+云南","云南-昆明市"],["+广西","广西壮族自治区-南宁市"],["+广东","广东-广州市"],["+海南","海南-海口市"]];
     var Tb = {};
     var ShengHuiObj = {};
-    for(var i = 0;i<Btihuan.length;i++){
+    for(var i = 0;i<Btihuan.length;i++){    //建立替换省对应关系
         Tb[Btihuan[i]]=tihuan[i];
     }
-    for(var i = 0;i<shenghui.length;i++){
+    for(var i = 0;i<shenghui.length;i++){   //建立省会替换对应关系
         ShengHuiObj[shenghui[i][0]]=shenghui[i][1];
     }
-    function addsex(obj){
+    function addsex(obj){                   //添加区间
         var fath = obj.parentNode.parentNode;
         var div = document.createElement("div");
         div.setAttribute("class","sex");
         div.innerHTML = "<input type='button' name='' value='删除区间' class='delsex' onclick='deletesex(this)'><input type='text' name='qj' value='' placeholder='区间'><input type='text' name='sz' value='' placeholder='首重'><input type='text' name='sf' value='' placeholder='首费'><input type='text' name='xz' value='' placeholder='续重'><input type='text' name='xf' value='' placeholder='续费'>";
         fath.appendChild(div);
     }
-    function deletesex(obj){
+    function deletesex(obj){                //删除区间
         var fath = obj.parentNode;
-        fath.parentNode.removeChild(fath);
+        fath.parentNode.removeChild(fath);  
     }
     function addbigsex(obj){
         var fath = document.getElementById('main');
@@ -186,8 +186,8 @@
         }
         for(var i=0;i<ssq.length;i++){                      //没有省得加上省
             for(var j=0;j<ssq[i].length;j++){
+                if(ShengHuiObj[ssq[i][j]]!=undefined)ssq[i][j]=ShengHuiObj[ssq[i][j]];
                 ssq[i][j] = ssq[i][j].split("-");
-                if(ShengHuiObj[ssq[i][j][0]]!=undefined)ssq[i][j][0]=ShengHuiObj[ssq[i][j][0]];
                 if(Tb[ssq[i][j][0]]!=undefined)ssq[i][j][0]=Tb[ssq[i][j][0]];
             }
         }
@@ -197,7 +197,6 @@
             mny[i]=new Array();
             for(var j=1;j<x.length;j++){
                 x[j].value==""?mny[i][j-1]=0:mny[i][j-1]=x[j].value;
-                
             }
         }
     }
