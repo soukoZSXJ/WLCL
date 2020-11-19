@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>上传文件</title>
+  <script type="text/javascript" src='./xlsx.full.min.js'></script>
+</head>
+<style>
+table{table-layout:fixed;overflow:hidden;border-collapse: collapse;}
+tr{height:50px;}
+td{width:200px;height:50px;text-align: center;}
+.idiv{
+  text-align: center;
+  height:100%;
+  width:100%;
+}
+</style>
+
+<body>
+  文件：<br>
+  <input type="file" id="file"><br>
+  <div id="main">
+    
+  </div>
+</body>
+<script>
+  //首先监听input框的变动，选中一个新的文件会触发change事件
+  document.querySelector("#file").addEventListener("change", function () {
+    //获取到选中的文件
+    var file = document.querySelector("#file").files[0];
+    var type = file.name.split('.');
+    if (type[type.length - 1] !== 'xlsx' && type[type.length - 1] !== 'xls') {
+      alert('只能选择excel文件导入');
+      return false;
+    }
+    const reader = new FileReader();
+    reader.readAsBinaryString(file);
+    reader.onload = (e) => {
+      const data = e.target.result;
+      const zzexcel = window.XLS.read(data, {
+        type: 'binary'
+      });
+      result = [];
+      for (let i = 0; i < zzexcel.SheetNames.length; i++) {
+        const newData = window.XLS.utils.sheet_to_json(zzexcel.Sheets[zzexcel.SheetNames[i]]);
+        result.push(...newData)
+      }
+      console.log('result', result)
+      newjson = [{}];
+        newjson[0].预订单量 = "预订单量";
+        newjson[0].货品编号 = "货品编号";
+        newjson[0].商家编码 = "商家编码";
+        newjson[0].货品名称 = "货品名称";
+        newjson[0].规格名称 = "规格名称";
+        newjson[0].规格码 = "规格码";
+        newjson[0].图片链接 = "图片链接";
+      for(var i = 0;i<result.length;i++){
+        newjson[i+1]={};
+        newjson[i+1].预订单量 = result[i].预订单量;
+        newjson[i+1].货品编号 = result[i].货品编号;
+        newjson[i+1].商家编码 = result[i].商家编码;
+        newjson[i+1].货品名称 = result[i].货品名称;
+        newjson[i+1].规格名称 = result[i].规格名称;
+        newjson[i+1].规格码 = result[i].规格码;
+      //   if(i!=0)result[i].预订单量!=result[i-1].预订单量?newjson[i+1].预订单量 = result[i].预订单量;:newjson[i+1].预订单量 ="";
+      //   else
+      //     newjson[i+1].预订单量 = result[i].预订单量;
+      //   if(i!=0)result[i].货品编号!=result[i-1].货品编号?newjson[i+1].货品编号 = result[i].货品编号;:newjson[i+1].货品编号 ="";
+      // else
+      //   newjson[i+1].货品编号 = result[i].货品编号;
+      //   if(i!=0)result[i].商家编码!=result[i-1].商家编码?newjson[i+1].商家编码 = result[i].商家编码;:newjson[i+1].商家编码 ="";
+      // else
+      //   newjson[i+1].商家编码 = result[i].商家编码;
+      //   if(i!=0)result[i].货品名称!=result[i-1].货品名称?newjson[i+1].货品名称 = result[i].货品名称;:newjson[i+1].货品名称 ="";
+      // else
+      //   newjson[i+1].货品名称 = result[i].货品名称;
+      //   if(i!=0)result[i].规格名称!=result[i-1].规格名称?newjson[i+1].规格名称 = result[i].规格名称;:newjson[i+1].规格名称 ="";
+      // else
+      //   newjson[i+1].规格名称 = result[i].规格名称;
+      //   if(i!=0)result[i].规格码!=result[i-1].规格码?newjson[i+1].规格码 = result[i].规格码;:newjson[i+1].规格码 ="";
+      //   else
+      //     newjson[i+1].规格码 = result[i].规格码;
+
+        if(i!=0)result[i].图片链接!=result[i-1].图片链接?newjson[i+1].图片链接 = "<img width='200px' height='100%' src='" + result[i].图片链接 + "'>":newjson[i+1].图片链接 ="";
+        else
+          newjson[i+1].图片链接 = "<img width='200px' height='100%' src='" + result[i].图片链接 + "'>";
+      }
+      createTable("main",newjson)
+    }
+  });
+  
+
+/*
+createTable(toid, jsondata, check, edit, del)：用于动态创建table，第0行为表头，数据里必须包含表头和数据的id
+@toid：创建table到id为toid的节点下
+@jsondata：用于创建table的json格式的数据（须在jsondata里包含表头标题）
+@check：是否创建查看按钮
+@edit：是否创建编辑按钮
+@del：是否创建删除按钮
+*/
+function createTable(toid, jsondata) {
+    var table = document.createElement("table");
+    var tr, td;
+    a=jsondata;
+    var trcontrol = jsondata[0]['货品编号'];
+    for (i in jsondata) {
+        tr = document.createElement("tr");               //创建tr
+        if(trcontrol!=jsondata[i]['货品编号']){
+          tr.style.borderTop = "3px solid black";
+          trcontrol = jsondata[i]['货品编号'];
+        }
+        //________________创建表头________________________________________
+        if (i == 0) {                                                           
+            for (j in jsondata[i]) {                                      //根据数据在tr内创建td
+                td = document.createElement("td");
+                td.appendChild(document.createTextNode(jsondata[i][j]));
+                if (j == "id") {                                                   //创建隐藏的td来存放id
+                    td.style.display = "none";
+                }
+                td.style.background = "#C1DAD7";              //设置表头颜色
+                tr.appendChild(td);
+            }
+        }
+        //________________创建数据行________________________________________
+        else {                                                                    
+            for (j in jsondata[i]) {                                      //根据数据在tr内创建td
+                if(jsondata[i][j]=="")break;
+                td = document.createElement("td");
+                td.innerHTML="<div class='idiv'>"+jsondata[i][j]+"</div>";
+                var csp = 1;
+                for(var ps=i;ps<jsondata.length;ps++){
+                  if(a[ps*1+1]==undefined){break;}
+                  //console.log(ps)
+                  if(jsondata[ps*1+1][j]=="")csp++;
+                  else
+                    break;
+                }
+                td.rowSpan = csp;
+                if (j == "id") {                                              //创建隐藏的td来存放id
+                    td.style.display = "none";
+                }
+                tr.appendChild(td);
+            }
+        }
+        table.appendChild(tr);
+    }
+    document.getElementById(toid).appendChild(table);
+}
+
+</script>
+
+</html>
